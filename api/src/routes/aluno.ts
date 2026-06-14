@@ -12,6 +12,7 @@ const alunoService = new AlunoService(alunoRepository)
 const alunoController = new AlunoController(alunoService)
 
 router.get("/", alunoController.listar)
+router.post("/login", alunoController.login)
 router.get("/:id", alunoController.buscarPorId)
 router.post("/", alunoController.criar)
 router.put("/:id", alunoController.atualizar)

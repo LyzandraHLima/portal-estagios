@@ -12,6 +12,7 @@ const empresaService = new EmpresaService(empresaRepository)
 const empresaController = new EmpresaController(empresaService)
 
 router.get("/", empresaController.listar)
+router.post("/login", empresaController.login)
 router.get("/:id", empresaController.buscarPorId)
 router.post("/", empresaController.criar)
 router.put("/:id", empresaController.atualizar)

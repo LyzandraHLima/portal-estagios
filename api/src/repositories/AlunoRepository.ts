@@ -47,6 +47,21 @@ export class AlunoRepository {
     return row ?? undefined
   }
 
+  async buscarPorEmailComSenha(email: string): Promise<Aluno | undefined> {
+  const row = await this.repo.findOne({
+    where: { email },
+    select: {
+      id: true,
+      nome: true,
+      email: true,
+      senha: true,
+      status: true,
+      apto: true,
+    }
+  })
+  return row ?? undefined
+}
+
   async buscarPorMatricula(matricula: string): Promise<Aluno | undefined> {
     const row = await this.repo.findOne({ where: { matricula } })
     return row ?? undefined

@@ -48,4 +48,15 @@ export class AlunoService {
     const ok = await this.repository.remover(id)
     if (!ok) throw new AppError("Aluno não encontrado", 404)
   }
+
+  async login(email: string, senha: string): Promise<Partial<Aluno>> {
+  const aluno = await this.repository.buscarPorEmailComSenha(email)
+  if (!aluno) throw new AppError("Email ou senha incorretos", 401)
+
+  const senhaCorreta = await bcrypt.compare(senha, aluno.senha)
+  if (!senhaCorreta) throw new AppError("Email ou senha incorretos", 401)
+
+  const { senha: _, ...alunoSemSenha } = aluno
+  return alunoSemSenha
+}
 }

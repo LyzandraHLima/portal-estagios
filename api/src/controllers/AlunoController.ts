@@ -28,6 +28,21 @@ export class AlunoController {
     status: z.string().optional(),
   })
 
+  private schemaLogin = z.object({
+  email: z.string().email("Email inválido"),
+  senha: z.string().min(1, "Senha obrigatória"),
+  })
+
+  login = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, senha } = this.schemaLogin.parse(req.body)
+      const aluno = await this.service.login(email, senha)
+      res.json({ aluno })
+    } catch (e) {
+      next(e)
+    }
+  }
+
   listar = async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const alunos = await this.service.listar()

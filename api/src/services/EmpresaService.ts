@@ -44,5 +44,15 @@ export class EmpresaService {
     if (!ok) throw new AppError("Empresa não encontrada", 404)
   }
 
+  async login(email: string, senha: string): Promise<Partial<Empresa>> {
+  const empresa = await this.repository.buscarPorEmailComSenha(email)
+  if (!empresa) throw new AppError("Email ou senha incorretos", 401)
+
+  const senhaCorreta = await bcrypt.compare(senha, empresa.senha)
+  if (!senhaCorreta) throw new AppError("Email ou senha incorretos", 401)
+
+  const { senha: _, ...empresaSemSenha } = empresa
+  return empresaSemSenha  
+}
 
 }

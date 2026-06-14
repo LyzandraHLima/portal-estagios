@@ -25,6 +25,21 @@ export class EmpresaController {
     status: z.string().optional(),
   })
 
+  private schemaLogin = z.object({
+    email: z.string().email("Email inválido"),
+    senha: z.string().min(1, "Senha obrigatória"),
+  })
+
+  login = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, senha } = this.schemaLogin.parse(req.body)
+      const empresa = await this.service.login(email, senha)
+      res.json({ empresa })
+    } catch (e) {
+      next(e)
+    }
+  }
+
   listar = async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const empresas = await this.service.listar()

@@ -38,6 +38,20 @@ async buscarPorId(id: number): Promise<Empresa | undefined> {
   return row ?? undefined
 }
 
+async buscarPorEmailComSenha(email: string): Promise<Empresa | undefined> {
+  const row = await this.repo.findOne({
+    where: { email },
+    select: {
+      id: true,
+      nome: true,
+      email: true,
+      senha: true,
+      status: true,
+    }
+  })
+  return row ?? undefined
+}
+
   async buscarPorCnpj(cnpj: string): Promise<Empresa | undefined> {
     const row = await this.repo.findOne({ where: { cnpj } })
     return row ?? undefined
