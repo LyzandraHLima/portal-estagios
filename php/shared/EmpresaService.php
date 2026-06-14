@@ -1,8 +1,8 @@
 <?php
 
-    require_once '../shared/ApiClient.php';
-    require_once '../shared/Vaga.php';
-    require_once '../shared/Candidatura.php';
+    require_once 'ApiClient.php';
+    require_once 'Vaga.php';
+    require_once 'Candidatura.php';
 
 class EmpresaService{
 
@@ -12,12 +12,45 @@ class EmpresaService{
         $this->api = $api;
     }
 
-    public function listarVagas(int $empresaId): array{
-        return $this->api->get('/api/vagas?empresaId=' . $empresaId);
+   public function listarVagas(int $empresaId): array {
+        $resposta = $this->api->get('/api/vagas?empresaId=' . $empresaId);
+        $vagas = [];
+ 
+        foreach ($resposta['vagas'] as $v) {
+            $vagas[] = new Vaga(
+                $v['id'],
+                $v['empresa']['id'],
+                $v['titulo'],
+                $v['descricao'],
+                $v['area'],
+                $v['requisitos'],
+                $v['carga_horaria'],
+                $v['modalidade'],
+                $v['status'],
+                $v['created_at']
+            );
+        }
+ 
+        return $vagas;
     }
     
-    public function buscarVaga(int $vagaId): array{
-        return $this->api->get('/api/vagas/' . $vagaId);
+   public function buscarVaga(int $vagaId): ?Vaga {
+        $resposta = $this->api->get('/api/vagas/' . $vagaId);
+        $v = $resposta['vaga'] ?? null;
+        if (!$v) return null;
+ 
+        return new Vaga(
+            $v['id'],
+            $v['empresa']['id'],
+            $v['titulo'],
+            $v['descricao'],
+            $v['area'],
+            $v['requisitos'],
+            $v['carga_horaria'],
+            $v['modalidade'],
+            $v['status'],
+            $v['created_at']
+        );
     }
 
     public function criarVaga(array $dados): array{
@@ -25,7 +58,7 @@ class EmpresaService{
     }
     
     public function editarVaga(int $vagaId, array $dados): array{
-        return $this->api->patch('/api/vagas/'. $vagaId, $dados);
+        return $this->api->put('/api/vagas/'. $vagaId, $dados);
     }
 
     public function deletarVaga(int $vagaId): bool{
@@ -36,21 +69,16 @@ class EmpresaService{
         return $this->api->get('/api/candidaturas?vagaId=' . $vagaId);
     }
 
-    public function atualizarStatusCandidatura(int $id, string $status): array {
+    public function atualizarStatusCandidatura(int $id, string $status): array{
         $dados = ['status' => $status];
         return $this->api->put('/api/candidaturas/' . $id . '/status', $dados);
     }
 
     public function login(string $email, string $senha): ?array {
-    $resposta = $this->api->get('/api/empresas');
+    $dados = ['email' => $email, 'senha' => $senha];
+    $resposta = $this->api->post('/api/empresas/login', $dados);
     
-    foreach ($resposta['empresas'] as $empresa) {
-        if ($empresa['email'] === $email && $empresa['senha'] === $senha) {
-            return $empresa;
-        }
-    }
-    
-    return null;
+    return $resposta['empresa'] ?? null;
 }
     
 }
