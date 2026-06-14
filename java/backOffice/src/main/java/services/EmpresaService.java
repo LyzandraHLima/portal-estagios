@@ -2,6 +2,7 @@ package services;
 
 import dao.EmpresaDAO;
 import model.Empresa;
+import utils.SenhaUtil;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -45,15 +46,22 @@ public class EmpresaService implements IEmpresaService {
     @Override
     public void cadastrar(Empresa empresa) {
         validar(empresa);
+        if (empresa.getSenha() == null || empresa.getSenha().isBlank())
+            throw new IllegalArgumentException("Senha é obrigatória.");
+        empresa.setSenha(SenhaUtil.criptografar(empresa.getSenha())); // 👈 hash aqui
         try {
             dao.inserir(empresa);
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao cadastrar empresa.", e);
         }
     }
+
     @Override
     public void editar(Empresa empresa) {
         validar(empresa);
+        if (empresa.getSenha() != null && !empresa.getSenha().startsWith("$2")) {
+            empresa.setSenha(SenhaUtil.criptografar(empresa.getSenha())); // 👈 só recriptografa se for senha nova
+        }
         try {
             dao.atualizar(empresa);
         } catch (SQLException e) {
@@ -72,7 +80,7 @@ public class EmpresaService implements IEmpresaService {
 
     @Override
     public void alternarStatus(Empresa empresa) {
-        empresa.alternarStatus(); // comportamento encapsulado no modelo — SRP
+        empresa.alternarStatus();
         editar(empresa);
     }
 

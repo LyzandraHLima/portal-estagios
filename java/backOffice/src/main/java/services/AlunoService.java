@@ -2,6 +2,7 @@ package services;
 
 import dao.AlunoDAO;
 import model.Aluno;
+import utils.SenhaUtil;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -49,6 +50,9 @@ public class AlunoService implements IAlunoService {
     @Override
     public void cadastrar(Aluno aluno) {
         validar(aluno);
+        if (aluno.getSenha() == null || aluno.getSenha().isBlank())
+            throw new IllegalArgumentException("Senha é obrigatória.");
+        aluno.setSenha(SenhaUtil.criptografar(aluno.getSenha()));
         try {
             dao.inserir(aluno);
         } catch (SQLException e) {
@@ -59,6 +63,9 @@ public class AlunoService implements IAlunoService {
     @Override
     public void editar(Aluno aluno) {
         validar(aluno);
+        if (aluno.getSenha() !=null && !aluno.getSenha().startsWith("$2")){
+            aluno.setSenha(SenhaUtil.criptografar((aluno.getSenha())));
+        }
         try {
             dao.atualizar(aluno);
         } catch (SQLException e) {
@@ -111,6 +118,8 @@ public class AlunoService implements IAlunoService {
                 a.setCurso(partes[2].trim());
                 if (partes.length > 3) a.setPeriodo(Integer.parseInt(partes[3].trim()));
                 if (partes.length > 4) a.setEmail(partes[4].trim());
+                if (partes.length > 5) a.setSenha(partes[5].trim());
+                else                   a.setSenha(partes[1].trim());
 
                 cadastrar(a);
                 contador++;

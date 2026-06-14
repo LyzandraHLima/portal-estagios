@@ -20,6 +20,7 @@ public class Aluno {
     private boolean apto;
     private StatusAluno status;
     private LocalDateTime createdAt;
+    private String senha;
 
 
     public Aluno() {
@@ -30,7 +31,7 @@ public class Aluno {
     public static Aluno reconstituir(int id, String nome, String email, String cpf,
                                      String matricula, String curso, int periodo,
                                      boolean apto, StatusAluno status,
-                                     LocalDateTime createdAt) {
+                                     LocalDateTime createdAt, String senha) {
         Aluno a    = new Aluno();
         a.id       = id;
         a.nome     = nome;
@@ -42,6 +43,7 @@ public class Aluno {
         a.apto     = apto;
         a.status   = status;
         a.createdAt = createdAt;
+        a.senha = senha;
         return a;
     }
 
@@ -72,6 +74,7 @@ public class Aluno {
     public boolean isApto()         { return apto; }
     public StatusAluno getStatus()  { return status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public String getSenha()        {return senha;}
 
     public void setId(int id)           { this.id = id; }
     public void setNome(String nome) {
@@ -108,6 +111,10 @@ public class Aluno {
     public void setStatus(StatusAluno status) {
         Validador.exigirNaoVazio(status != null ? status.name() : null, "Status");
         this.status = status;
+    }
+    public void setSenha(String senha){
+        Validador.exigirNaoVazio(senha, "senha");
+        this.senha = senha;
     }
 
     @Override
