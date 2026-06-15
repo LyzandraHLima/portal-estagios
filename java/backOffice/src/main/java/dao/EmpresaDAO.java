@@ -2,7 +2,6 @@ package dao;
 
 import model.Empresa;
 import model.StatusEmpresa;
-
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,9 +23,7 @@ public class EmpresaDAO implements IGenericDAO<Empresa> {
 
         try (PreparedStatement ps = connection.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                lista.add(mapear(rs));
-            }
+            while (rs.next()) lista.add(mapear(rs));
         }
         return lista;
     }
@@ -38,9 +35,7 @@ public class EmpresaDAO implements IGenericDAO<Empresa> {
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, "%" + termo + "%");
             try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    lista.add(mapear(rs));
-                }
+                while (rs.next()) lista.add(mapear(rs));
             }
         }
         return lista;
@@ -62,13 +57,14 @@ public class EmpresaDAO implements IGenericDAO<Empresa> {
     @Override
     public void inserir(Empresa empresa) throws SQLException {
         String sql = """
-                INSERT INTO empresa (nome, cnpj, email, telefone, area_atuacao, status, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO empresa (nome, cnpj, email, telefone, area_atuacao, status, senha, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preencherStatement(ps, empresa);
-            ps.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setString(7, empresa.getSenha());                        // senha posição 7
+            ps.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now())); // created_at posição 8
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -81,13 +77,14 @@ public class EmpresaDAO implements IGenericDAO<Empresa> {
     public void atualizar(Empresa empresa) throws SQLException {
         String sql = """
                 UPDATE empresa
-                SET nome = ?, cnpj = ?, email = ?, telefone = ?, area_atuacao = ?, status = ?
+                SET nome = ?, cnpj = ?, email = ?, telefone = ?, area_atuacao = ?, status = ?, senha = ?
                 WHERE id = ?
                 """;
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             preencherStatement(ps, empresa);
-            ps.setInt(7, empresa.getId());
+            ps.setString(7, empresa.getSenha()); // senha posição 7
+            ps.setInt(8, empresa.getId());       // id posição 8
             ps.executeUpdate();
         }
     }
@@ -109,6 +106,7 @@ public class EmpresaDAO implements IGenericDAO<Empresa> {
         ps.setString(4, e.getTelefone());
         ps.setString(5, e.getAreaAtuacao());
         ps.setString(6, e.getStatus().name());
+        // posições 7 e 8 preenchidas fora daqui
     }
 
     private Empresa mapear(ResultSet rs) throws SQLException {
@@ -120,7 +118,8 @@ public class EmpresaDAO implements IGenericDAO<Empresa> {
                 rs.getString("telefone"),
                 rs.getString("area_atuacao"),
                 StatusEmpresa.valueOf(rs.getString("status")),
-                rs.getTimestamp("created_at").toLocalDateTime()
+                rs.getTimestamp("created_at").toLocalDateTime(),
+                rs.getString("senha") // 👈 novo
         );
     }
 }

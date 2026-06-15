@@ -122,12 +122,13 @@ public class TelaAlunos extends TelaBase implements PainelDefault {
     private void abrirFormulario(Aluno aluno) {
         boolean editando = aluno != null;
 
-        JTextField txtNome      = new JTextField(editando ? aluno.getNome()                    : "", 20);
-        JTextField txtCpf       = new JTextField(editando ? aluno.getCpf()                      : "",20);
-        JTextField txtMatricula = new JTextField(editando ? aluno.getMatricula()               : "", 20);
-        JTextField txtEmail     = new JTextField(editando ? aluno.getEmail()                   : "", 20);
-        JTextField txtCurso     = new JTextField(editando ? aluno.getCurso()                   : "", 20);
-        JTextField txtPeriodo   = new JTextField(editando ? String.valueOf(aluno.getPeriodo()) : "1", 5);
+        JTextField     txtNome      = new JTextField(editando ? aluno.getNome()                    : "", 20);
+        JTextField     txtCpf       = new JTextField(editando ? aluno.getCpf()                     : "", 20);
+        JTextField     txtMatricula = new JTextField(editando ? aluno.getMatricula()               : "", 20);
+        JTextField     txtEmail     = new JTextField(editando ? aluno.getEmail()                   : "", 20);
+        JTextField     txtCurso     = new JTextField(editando ? aluno.getCurso()                   : "", 20);
+        JTextField     txtPeriodo   = new JTextField(editando ? String.valueOf(aluno.getPeriodo()) : "1", 5);
+        JPasswordField txtSenha     = new JPasswordField(20); // nunca preenche com hash
 
         JPanel form = new JPanel(new GridBagLayout());
         painelAdd(form, new JLabel("Nome *:"),         0, 0); painelAdd(form, txtNome,      1, 0);
@@ -136,6 +137,8 @@ public class TelaAlunos extends TelaBase implements PainelDefault {
         painelAdd(form, new JLabel("Email:"),          0, 3); painelAdd(form, txtEmail,     1, 3);
         painelAdd(form, new JLabel("Curso:"),          0, 4); painelAdd(form, txtCurso,     1, 4);
         painelAdd(form, new JLabel("Período (1-12):"), 0, 5); painelAdd(form, txtPeriodo,   1, 5);
+        painelAdd(form, new JLabel("Senha" + (editando ? " (deixe vazio para não alterar):" : " *:")), 0, 6);
+        painelAdd(form, txtSenha, 1, 6);
 
         int res = JOptionPane.showConfirmDialog(
                 this, form,
@@ -152,6 +155,17 @@ public class TelaAlunos extends TelaBase implements PainelDefault {
             a.setEmail(txtEmail.getText().trim());
             a.setCurso(txtCurso.getText().trim());
             a.setPeriodo(Integer.parseInt(txtPeriodo.getText().trim()));
+
+            String senhaDigitada = new String(txtSenha.getPassword()).trim();
+
+            if (!editando) {
+                if (senhaDigitada.isBlank())
+                    throw new IllegalArgumentException("Senha é obrigatória para novo aluno.");
+                a.setSenha(senhaDigitada);
+            } else {
+                if (!senhaDigitada.isBlank())
+                    a.setSenha(senhaDigitada);
+            }
 
             if (editando) service.editar(a);
             else          service.cadastrar(a);

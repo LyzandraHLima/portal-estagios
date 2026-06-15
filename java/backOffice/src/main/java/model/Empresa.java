@@ -12,6 +12,7 @@ public class Empresa {
     private String areaAtuacao;
     private StatusEmpresa status;
     private final LocalDateTime createdAt;
+    private String senha;
 
     public Empresa() {
         this.createdAt = LocalDateTime.now();
@@ -20,7 +21,7 @@ public class Empresa {
 
     private Empresa(int id, String nome, String cnpj, String email,
                     String telefone, String areaAtuacao,
-                    StatusEmpresa status, LocalDateTime createdAt) {
+                    StatusEmpresa status, LocalDateTime createdAt, String senha) {
         this.id          = id;
         this.nome        = nome;
         this.cnpj        = cnpj;
@@ -33,8 +34,8 @@ public class Empresa {
 
     public static Empresa reconstituir(int id, String nome, String cnpj, String email,
                                        String telefone, String areaAtuacao,
-                                       StatusEmpresa status, LocalDateTime createdAt) {
-        return new Empresa(id, nome, cnpj, email, telefone, areaAtuacao, status, createdAt);
+                                       StatusEmpresa status, LocalDateTime createdAt, String senha) {
+        return new Empresa(id, nome, cnpj, email, telefone, areaAtuacao, status, createdAt, senha);
     }
 
     public void ativar() {
@@ -62,6 +63,7 @@ public class Empresa {
     public String getAreaAtuacao()  { return areaAtuacao; }
     public StatusEmpresa getStatus(){ return status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public String getSenha() { return senha;}
 
     public void setId(int id)           { this.id = id; }
     public void setNome(String nome) {
@@ -93,6 +95,12 @@ public class Empresa {
         if (status == null) throw new IllegalArgumentException("Status não pode ser nulo.");
         this.status = status;
     }
+
+    public void setSenha(String senha) {
+        Validador.exigirNaoVazio(senha, "Senha");
+        this.senha = senha;
+    }
+
     @Override
     public String toString() {
         return String.format(

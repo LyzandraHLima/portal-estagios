@@ -2,7 +2,6 @@ package dao;
 
 import model.Aluno;
 import model.StatusAluno;
-
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -62,13 +61,14 @@ public class AlunoDAO implements IGenericDAO<Aluno> {
     @Override
     public void inserir(Aluno aluno) throws SQLException {
         String sql = """
-                INSERT INTO aluno (nome, email, cpf, matricula, curso, periodo, apto, status, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO aluno (nome, email, cpf, matricula, curso, periodo, apto, status, senha, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             preencherStatement(ps, aluno);
-            ps.setTimestamp(9, Timestamp.valueOf(LocalDateTime.now()));
+            ps.setString(9, aluno.getSenha());               // senha na posição 9
+            ps.setTimestamp(10, Timestamp.valueOf(LocalDateTime.now())); // created_at na posição 10
             ps.executeUpdate();
 
             try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -81,13 +81,14 @@ public class AlunoDAO implements IGenericDAO<Aluno> {
     public void atualizar(Aluno aluno) throws SQLException {
         String sql = """
                 UPDATE aluno
-                SET nome = ?, email = ?, cpf = ?, matricula = ?, curso = ?, periodo = ?, apto = ?, status = ?
+                SET nome = ?, email = ?, cpf = ?, matricula = ?, curso = ?, periodo = ?, apto = ?, status = ?, senha = ?
                 WHERE id = ?
                 """;
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             preencherStatement(ps, aluno);
-            ps.setInt(9, aluno.getId());
+            ps.setString(9, aluno.getSenha()); // senha na posição 9
+            ps.setInt(10, aluno.getId());      // id na posição 10
             ps.executeUpdate();
         }
     }
@@ -113,6 +114,7 @@ public class AlunoDAO implements IGenericDAO<Aluno> {
         ps.setInt   (6, a.getPeriodo());
         ps.setBoolean(7, a.isApto());
         ps.setString(8, a.getStatus().name());
+        // posições 9 e 10 são preenchidas fora daqui (variam por método)
     }
 
     private Aluno mapear(ResultSet rs) throws SQLException {
@@ -126,7 +128,8 @@ public class AlunoDAO implements IGenericDAO<Aluno> {
                 rs.getInt("periodo"),
                 rs.getBoolean("apto"),
                 StatusAluno.valueOf(rs.getString("status")),
-                rs.getTimestamp("created_at").toLocalDateTime()
+                rs.getTimestamp("created_at").toLocalDateTime(),
+                rs.getString("senha") // minúsculo — igual ao nome da coluna no banco
         );
     }
 }

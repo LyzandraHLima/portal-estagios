@@ -101,11 +101,12 @@ public class TelaEmpresa extends TelaBase implements PainelDefault{
     private void abrirFormulario(Empresa empresa) {
         boolean editando = empresa != null;
 
-        JTextField txtNome     = new JTextField(editando ? empresa.getNome()        : "", 20);
-        JTextField txtCnpj     = new JTextField(editando ? empresa.getCnpj()        : "", 20);
-        JTextField txtEmail    = new JTextField(editando ? empresa.getEmail()       : "", 20);
-        JTextField txtTelefone = new JTextField(editando ? empresa.getTelefone()    : "", 20);
-        JTextField txtArea     = new JTextField(editando ? empresa.getAreaAtuacao() : "", 20);
+        JTextField     txtNome     = new JTextField(editando ? empresa.getNome()        : "", 20);
+        JTextField     txtCnpj     = new JTextField(editando ? empresa.getCnpj()        : "", 20);
+        JTextField     txtEmail    = new JTextField(editando ? empresa.getEmail()       : "", 20);
+        JTextField     txtTelefone = new JTextField(editando ? empresa.getTelefone()    : "", 20);
+        JTextField     txtArea     = new JTextField(editando ? empresa.getAreaAtuacao() : "", 20);
+        JPasswordField txtSenha    = new JPasswordField(20); // nunca preenche com hash
 
         JPanel form = new JPanel(new GridBagLayout());
         painelAdd(form, new JLabel("Nome *:"),   0, 0); painelAdd(form, txtNome,     1, 0);
@@ -113,6 +114,8 @@ public class TelaEmpresa extends TelaBase implements PainelDefault{
         painelAdd(form, new JLabel("Email:"),    0, 2); painelAdd(form, txtEmail,    1, 2);
         painelAdd(form, new JLabel("Telefone:"), 0, 3); painelAdd(form, txtTelefone, 1, 3);
         painelAdd(form, new JLabel("Área *:"),   0, 4); painelAdd(form, txtArea,     1, 4);
+        painelAdd(form, new JLabel("Senha" + (editando ? " (deixe vazio para não alterar):" : " *:")), 0, 5);
+        painelAdd(form, txtSenha, 1, 5);
 
         int res = JOptionPane.showConfirmDialog(this, form,
                 editando ? "Editar Empresa" : "Nova Empresa",
@@ -127,6 +130,17 @@ public class TelaEmpresa extends TelaBase implements PainelDefault{
             e.setEmail(txtEmail.getText().trim());
             e.setTelefone(txtTelefone.getText().trim());
             e.setAreaAtuacao(txtArea.getText().trim());
+
+            String senhaDigitada = new String(txtSenha.getPassword()).trim();
+
+            if (!editando) {
+                if (senhaDigitada.isBlank())
+                    throw new IllegalArgumentException("Senha é obrigatória para nova empresa.");
+                e.setSenha(senhaDigitada);
+            } else {
+                if (!senhaDigitada.isBlank())
+                    e.setSenha(senhaDigitada);
+            }
 
             if (editando) service.editar(e);
             else          service.cadastrar(e);
