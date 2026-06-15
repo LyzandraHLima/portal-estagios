@@ -3,6 +3,7 @@ session_start();
 
 require_once 'shared/ApiClient.php';
 require_once 'shared/EmpresaService.php';
+require_once 'shared/AlunoService.php';
 
 
 $erro = null;
@@ -23,9 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $erro = 'Email ou senha inválidos';
         }
-    } else {
+    }  else {
+    $service = new AlunoService($api);
+    $aluno = $service->login($_POST['email'], $_POST['senha']);
 
-        $erro = 'Login de aluno ainda não disponível';
+    if ($aluno) {
+        $_SESSION['alunoId'] = $aluno['id'];
+        $_SESSION['alunoNome'] = $aluno['nome'];
+        header('Location: aluno/index.php');
+        exit;
+    } else {
+        $erro = 'Email ou senha inválidos';
+    }
     }
 }
 ?>
@@ -69,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="card login-card shadow-sm border-0">
         <div class="card-body p-4 p-md-5">
-            <h1 class="h4 fw-bold mb-1">Bem-vindo de volta</h1>
+            <h1 class="h4 fw-bold mb-1">Portal de Estágios UniAlfa</h1>
             <p class="text-muted small mb-4">Escolha seu tipo de acesso para continuar</p>
 
             <?php if ($erro): ?>
