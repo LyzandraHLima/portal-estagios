@@ -23,7 +23,7 @@ async function rodarSeed() {
       senha: "$2b$10$rqzSkIcjtYrgmqptbi6JaOOYi/H.Yn.4AmgHGlAR1LzrKOMP872Yu",
       telefone: "44999999999",
       area_atuacao: "Tecnologia",
-      status: "aprovada",
+      status: "ATIVA",
     }))
 
     const empresa2 = await empresaRepo.save(empresaRepo.create({
@@ -33,7 +33,7 @@ async function rodarSeed() {
       senha: "$2b$10$rqzSkIcjtYrgmqptbi6JaOOYi/H.Yn.4AmgHGlAR1LzrKOMP872Yu",
       telefone: "44988887777",
       area_atuacao: "Marketing",
-      status: "aprovada",
+      status: "ATIVA",
     }))
 
     const vaga1 = await vagaRepo.save(vagaRepo.create({
