@@ -23,7 +23,6 @@ if (!isset($_GET['vagaId'])) {
 $vagaId = (int) $_GET['vagaId'];
 $mensagem = null;
 
-// Trata atualização de status
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $candidaturaId = (int) $_POST['candidaturaId'];
     $novoStatus = $_POST['status'];

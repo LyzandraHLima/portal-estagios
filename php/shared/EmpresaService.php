@@ -65,9 +65,10 @@ class EmpresaService{
         return $this->api->delete('/api/vagas/' . $vagaId);
     }
 
-    public function listarCandidatos(int $vagaId): array{
-        return $this->api->get('/api/candidaturas?vagaId=' . $vagaId);
-    }
+    public function listarCandidatos(int $vagaId): array {
+    $resposta = $this->api->get('/api/candidaturas?vagaId=' . $vagaId);
+    return $resposta['candidaturas'] ?? [];
+}
 
     public function atualizarStatusCandidatura(int $id, string $status): array{
         $dados = ['status' => $status];
