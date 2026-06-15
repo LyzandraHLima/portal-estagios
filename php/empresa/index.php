@@ -62,7 +62,7 @@ $totalVagas = is_array($vagas) ? count($vagas) : 0;
     </nav>
 
     <div class="container py-5">
-        <h1 class="h3 fw-bold mb-1">Olá, <?= htmlspecialchars($empresaNome) ?> 👋</h1>
+        <h1 class="h3 fw-bold mb-1">Olá, <?= htmlspecialchars($empresaNome) ?> </h1>
         <p class="text-muted mb-4">Aqui está um resumo do seu painel</p>
 
         <div class="row g-3 mb-4">
